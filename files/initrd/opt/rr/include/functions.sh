@@ -378,9 +378,9 @@ function connectwlanif() {
 function findDSMRoot() {
   local DSMROOTS=""
   local RAIDS="$(lsblk -pno KNAME,PARTN,FSTYPE,FSVER,LABEL | grep -w " 1" | grep -w "linux_raid_member")"
-  if echo "${RAIDS}" | grep -q "1.2"; then
-    # SynologyNAS:0, DiskStation:0, SynologyNVR:0, BeeStation:0
-    local LABELS="$(echo "${RAIDS}" | grep "1.2" | awk '{print $5}' | uniq)"
+  # SynologyNAS:0, DiskStation:0, SynologyNVR:0, BeeStation:0
+  local LABELS="$(echo "${RAIDS}" | grep "1.2" | grep -E "SynologyNAS:0|DiskStation:0|SynologyNVR:0|BeeStation:0" | awk '{print $5}' | uniq)"
+  if [ -n "${LABELS}" ]; then
     for I in ${LABELS}; do
        [ -L "/dev/md/${I}" ] && DSMROOTS="${DSMROOTS} /dev/md/${I}"
     done
